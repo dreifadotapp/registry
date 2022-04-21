@@ -210,3 +210,25 @@ MySecondModuleRegistrar().register(registry, true)
   problems will only surface once an instance is requested. I will argue that is actually a benefit - the registry
   pattern is so lightweight it can be used in any unit test and so any problems are likely caught early. 
   
+## Dependencies
+
+As with everything in [Dreifa dot App](https://dreifa.app), this library has minimal dependencies:
+
+* Kotlin 1.5
+* Java 11
+
+## Adding as a dependency
+
+Maven jars are deployed using [JitPack](https://jitpack.io/).
+See [releases](https://github.com/dreifadotapp/registry/releases) for version details.
+
+```groovy
+//add jitpack repo
+maven { url "https://jitpack.io" }
+
+// add dependency 
+implementation "com.github.dreifadotapp:registry:<release>"
+```
+
+_JitPack build status is at https://jitpack.io/com/github/dreifadotapp/registry/$releaseTag/build.log_
+
