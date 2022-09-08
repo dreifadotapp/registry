@@ -1,4 +1,4 @@
-module dreifadtoapp.registry {
+module dreifadotapp.registry {
 
     requires kotlin.stdlib;
 
