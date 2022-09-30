@@ -131,6 +131,21 @@ class RegistryTest {
         assertThat(registry.get(InterfaceAPlus::class.qualifiedName!!), sameInstance(impl as Any ))
         assertThat(registry.get(InterfaceA::class.qualifiedName!!), sameInstance(impl as Any))
     }
+
+    @Test
+    fun `should replace existing interface`() {
+        val impl1 = InterfaceAImplOne()
+        val impl2 = InterfaceAImplTwo()
+        val registry = Registry().store(impl1)
+
+        assertThat(registry.get(InterfaceAImplOne::class.java), sameInstance(impl1))
+        assertThat(registry.get(InterfaceA::class.java), sameInstance(impl1))
+
+        registry.store(impl2, InterfaceA::class.java )
+        assertThat(registry.get(InterfaceAImplTwo::class.java), sameInstance(impl2))
+        assertThat(registry.get(InterfaceA::class.java), sameInstance(impl2))
+        assertThat({ registry.get(InterfaceAImplOne::class.java) }, throws<RuntimeException>())
+    }
 }
 
 class ClassA

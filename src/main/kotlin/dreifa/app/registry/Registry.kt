@@ -34,6 +34,22 @@ class Registry {
         return this
     }
 
+    fun store(`object`: Any, clazz: Class<*>): Registry {
+        //
+        try {
+            val existing = get(clazz)
+            val entry = registry.entries.singleOrNull { it.value == existing }
+            if (entry != null) {
+                registry.remove(entry.key)
+            }
+        } catch (ignoreMe: java.lang.RuntimeException) {
+        }
+
+        registry[`object`.javaClass] = `object`
+        return this
+    }
+
+
     /*
       Find an object by class or interface name. The name
       must be fully qualified.
