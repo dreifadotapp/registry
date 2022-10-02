@@ -141,10 +141,24 @@ class RegistryTest {
         assertThat(registry.get(InterfaceAImplOne::class.java), sameInstance(impl1))
         assertThat(registry.get(InterfaceA::class.java), sameInstance(impl1))
 
-        registry.store(impl2, InterfaceA::class.java )
+        registry.storeOrReplace(impl2, InterfaceA::class.java )
         assertThat(registry.get(InterfaceAImplTwo::class.java), sameInstance(impl2))
         assertThat(registry.get(InterfaceA::class.java), sameInstance(impl2))
         assertThat({ registry.get(InterfaceAImplOne::class.java) }, throws<RuntimeException>())
+    }
+
+    @Test
+    fun `should replace existing subclass`() {
+        val class1 = ClassCPlus()
+        val class2 = ClassCPlusPlus()
+        val registry = Registry().store(class1)
+
+        assertThat(registry.get(ClassCPlus::class.java), sameInstance(class1))
+        assertThat(registry.get(ClassC::class.java), sameInstance(class1))
+
+        registry.storeOrReplace(class2, ClassC::class.java )
+        assertThat(registry.get(ClassCPlus::class.java), sameInstance(class2))
+        assertThat(registry.get(ClassC::class.java), sameInstance(class2))
     }
 }
 

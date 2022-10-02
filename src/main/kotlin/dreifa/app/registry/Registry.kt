@@ -34,19 +34,26 @@ class Registry {
         return this
     }
 
-    fun store(`object`: Any, clazz: Class<*>): Registry {
-        //
+    /*
+      Store an object in the registry, checking to see if there is already an
+      object that is retrievable via the supplied `clazz` (i.e. get(clazz) will
+      succeed), in which case that instance is replaced
+     */
+    fun storeOrReplace(`object`: Any, clazz: Class<*>): Registry {
         try {
             val existing = get(clazz)
-            val entry = registry.entries.singleOrNull { it.value == existing }
-            if (entry != null) {
-                registry.remove(entry.key)
-            }
-        } catch (ignoreMe: java.lang.RuntimeException) {
+            val entry = registry.entries.single() { it.value == existing }
+            registry.remove(entry.key)
+        } catch (ignoreMe: NotFoundException) {
         }
 
         registry[`object`.javaClass] = `object`
         return this
+    }
+
+    @Deprecated(message = "use storeOrReplace")
+    fun store(`object`: Any, clazz: Class<*>): Registry {
+        return storeOrReplace(`object`, clazz)
     }
 
 
