@@ -11,13 +11,18 @@ buildscript {
 
 
 plugins {
-    id 'java'
+
     id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
     //id("org.jetbrains.dokka") version "1.5.30"
 }
 
-apply plugin: 'kotlin'
-apply plugin: 'maven'
+plugins {
+    // Apply the org.jetbrains.kotlin.jvm Plugin to add support for Kotlin.
+    //id 'org.jetbrains.kotlin.jvm'
+}
+
+//apply plugin: 'kotlin'
+//apply plugin: 'maven'
 
 //compileJava   {
 //    sourceCompatibility = '1.8'
@@ -30,23 +35,33 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-}
+//compileJava {
+//    dependsOn(':compileKotlin')
+//    doFirst {
+//        options.compilerArgs = [
+//                '--module-path', classpath.asPath,
+//        ]
+//        classpath = files()
+//    }
+//}
 
-
-tasks.withType(Test).configureEach {
-    useJUnitPlatform()
-    reports { junitXml.setEnabled(true) }
-}
-
-jar {
-    // Make JAR checksums hash repeatable
-    preserveFileTimestamps = false
-    reproducibleFileOrder = true
-}
+//tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+//    kotlinOptions {
+//        jvmTarget = "16"
+//    }
+//}
+//
+//
+//tasks.withType(Test).configureEach {
+//    useJUnitPlatform()
+//    reports { junitXml.setEnabled(true) }
+//}
+//
+//jar {
+//    // Make JAR checksums hash repeatable
+//    preserveFileTimestamps = false
+//    reproducibleFileOrder = true
+//}
 
 
 dependencies {
@@ -74,4 +89,10 @@ test {
         exceptionFormat "full"
     }
 
+}
+
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
 }
