@@ -164,7 +164,7 @@ class RegistryTest {
     fun `should enable logging `() {
         val a = ClassA()
         val b = ClassB()
-        val registry = Registry(a, b).enableLogging()
+        val registry = Registry(a, b).enableStatsLogging()
 
         assertThat(registry.get(ClassA::class.java), sameInstance(a))
         assertThat(registry.get(ClassB::class.java), sameInstance(b))

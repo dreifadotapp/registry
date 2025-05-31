@@ -8,9 +8,8 @@ import java.util.concurrent.ConcurrentHashMap
  */
 @Suppress("UNCHECKED_CAST")
 class Registry {
-    private var registry: MutableMap<Class<*>, Any> = HashMap()
-    private var lookupCache = ConcurrentHashMap<String, Any>()
-    private var loggingEnabled = false
+    private var registry: MutableMap<Class<*>, Any> = ConcurrentHashMap()
+    private var statsLoggingEnabled = false
     private var elapsedLookupTime: Long = 0
 
     constructor()
@@ -25,13 +24,13 @@ class Registry {
         }
     }
 
-    // only used byu clone() method
+    // only used by clone() method
     private constructor(reg: Map<Class<*>, Any>) {
         registry = HashMap(reg)
     }
 
-    fun enableLogging(): Registry {
-        loggingEnabled = true
+    fun enableStatsLogging(): Registry {
+        statsLoggingEnabled = true
         return this
     }
 
@@ -60,10 +59,10 @@ class Registry {
         return this
     }
 
-    @Deprecated(message = "use storeOrReplace")
-    fun store(`object`: Any, clazz: Class<*>): Registry {
-        return storeOrReplace(`object`, clazz)
-    }
+//    @Deprecated(message = "use storeOrReplace")
+//    fun store(`object`: Any, clazz: Class<*>): Registry {
+//        return storeOrReplace(`object`, clazz)
+//    }
 
 
     /*
@@ -71,7 +70,7 @@ class Registry {
       must be fully qualified.
      */
     fun get(clazzName: String): Any {
-        val start = if (loggingEnabled) {
+        val start = if (statsLoggingEnabled) {
             System.nanoTime()
         } else {
             -1
@@ -105,7 +104,7 @@ class Registry {
         }
         if (matches.isEmpty()) throw NotFoundException(clazzName)
         if (matches.size > 1) throw DuplicateException(clazzName, matches as Set<Any>)
-        if (loggingEnabled) {
+        if (statsLoggingEnabled) {
             val elapsed = System.nanoTime() - start
             elapsedLookupTime += elapsed
             println("Lookup of $clazzName took ${elapsed / 1000} us, total time ${elapsedLookupTime / 1_000_000} ms")
@@ -117,7 +116,7 @@ class Registry {
       Find an object by class or interface.
      */
     fun <T> get(clazz: Class<T>): T {
-        val start = if (loggingEnabled) {
+        val start = if (statsLoggingEnabled) {
             System.nanoTime()
         } else {
             -1
@@ -147,7 +146,7 @@ class Registry {
 
         if (matches.isEmpty()) throw NotFoundException(clazz.name)
         if (matches.size > 1) throw DuplicateException(clazz.name, matches as Set<Any>)
-        if (loggingEnabled) {
+        if (statsLoggingEnabled) {
             val elapsed = System.nanoTime() - start
             elapsedLookupTime += elapsed
             println("Lookup of ${clazz.name} took ${elapsed / 1000} us, total time ${elapsedLookupTime / 1_000_000} ms")
