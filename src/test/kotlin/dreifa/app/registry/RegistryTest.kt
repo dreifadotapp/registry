@@ -4,7 +4,6 @@ import com.natpryce.hamkrest.sameInstance
 import com.natpryce.hamkrest.throws
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
-import org.junit.jupiter.api.Disabled
 
 import java.util.concurrent.AbstractExecutorService
 import java.util.concurrent.ExecutorService
@@ -159,6 +158,17 @@ class RegistryTest {
         registry.storeOrReplace(class2, ClassC::class.java )
         assertThat(registry.get(ClassCPlus::class.java), sameInstance(class2))
         assertThat(registry.get(ClassC::class.java), sameInstance(class2))
+    }
+
+    @Test
+    fun `should enable logging `() {
+        val a = ClassA()
+        val b = ClassB()
+        val registry = Registry(a, b).enableLogging()
+
+        assertThat(registry.get(ClassA::class.java), sameInstance(a))
+        assertThat(registry.get(ClassB::class.java), sameInstance(b))
+        assertThat({ registry.get(ClassC::class.java) }, throws<RuntimeException>())
     }
 }
 

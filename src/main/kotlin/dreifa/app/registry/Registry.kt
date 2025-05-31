@@ -1,6 +1,7 @@
 package dreifa.app.registry
 
 import java.util.HashMap
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Simple registry for basic DI
@@ -8,6 +9,9 @@ import java.util.HashMap
 @Suppress("UNCHECKED_CAST")
 class Registry {
     private var registry: MutableMap<Class<*>, Any> = HashMap()
+    private var lookupCache = ConcurrentHashMap<String, Any>()
+    private var loggingEnabled = false
+    private var elapsedLookupTime: Long = 0
 
     constructor()
 
@@ -26,6 +30,11 @@ class Registry {
         registry = HashMap(reg)
     }
 
+    fun enableLogging(): Registry {
+        loggingEnabled = true
+        return this
+    }
+
     /*
       Store an object in the registry
      */
@@ -42,7 +51,7 @@ class Registry {
     fun storeOrReplace(`object`: Any, clazz: Class<*>): Registry {
         try {
             val existing = get(clazz)
-            val entry = registry.entries.single() { it.value == existing }
+            val entry = registry.entries.single { it.value == existing }
             registry.remove(entry.key)
         } catch (ignoreMe: NotFoundException) {
         }
@@ -62,6 +71,11 @@ class Registry {
       must be fully qualified.
      */
     fun get(clazzName: String): Any {
+        val start = if (loggingEnabled) {
+            System.nanoTime()
+        } else {
+            -1
+        }
         val matches = HashSet<Any>()
 
         if (Class.forName(clazzName).isInterface) {
@@ -91,6 +105,11 @@ class Registry {
         }
         if (matches.isEmpty()) throw NotFoundException(clazzName)
         if (matches.size > 1) throw DuplicateException(clazzName, matches as Set<Any>)
+        if (loggingEnabled) {
+            val elapsed = System.nanoTime() - start
+            elapsedLookupTime += elapsed
+            println("Lookup of $clazzName took ${elapsed / 1000} us, total time ${elapsedLookupTime / 1_000_000} ms")
+        }
         return matches.single()
     }
 
@@ -98,6 +117,11 @@ class Registry {
       Find an object by class or interface.
      */
     fun <T> get(clazz: Class<T>): T {
+        val start = if (loggingEnabled) {
+            System.nanoTime()
+        } else {
+            -1
+        }
         val matches = HashSet<T>()
         if (registry.containsKey(clazz)) {
             matches.add((registry[clazz] as T))
@@ -123,6 +147,12 @@ class Registry {
 
         if (matches.isEmpty()) throw NotFoundException(clazz.name)
         if (matches.size > 1) throw DuplicateException(clazz.name, matches as Set<Any>)
+        if (loggingEnabled) {
+            val elapsed = System.nanoTime() - start
+            elapsedLookupTime += elapsed
+            println("Lookup of ${clazz.name} took ${elapsed / 1000} us, total time ${elapsedLookupTime / 1_000_000} ms")
+        }
+
         return matches.single()
     }
 
