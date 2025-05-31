@@ -1,7 +1,6 @@
 # The 'Registry' Dependency Injection (DI) Pattern
 
-[![Circle CI](https://circleci.com/gh/dreifadotapp/registry.svg?style=shield)](https://circleci.com/gh/dreifadotapp/registry)
-[![Release](https://jitpack.io/v/User/Repo.svg)]
+
 (https://jitpack.io/dreifadotapp/registry)
 [![Licence Status](https://img.shields.io/github/license/dreifadotapp/registry)](https://github.com/dreifadotapp/registry/blob/master/licence.txt)
 
